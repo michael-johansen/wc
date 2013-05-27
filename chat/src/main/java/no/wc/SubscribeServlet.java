@@ -1,9 +1,6 @@
 package no.wc;
 
-import javax.inject.Inject;
 import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,17 +10,33 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 
-@WebServlet(urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
+@WebServlet(name = "SubscribeServlet", urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
 public class SubscribeServlet extends HttpServlet {
 
-    @Inject
-    private AsyncNotifyListener asyncNotifyListener;
+    private LinkedList<AsyncContext> asyncContexts = new LinkedList<>();
+
+    @Override
+    public void init() throws ServletException {
+        getServletContext().setAttribute("SubscribeServlet", this);
+    }
 
     @Override
     protected synchronized void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        asyncNotifyListener.addContext(httpServletRequest.startAsync());
+        AsyncContext asyncContext = httpServletRequest.startAsync();
+        synchronized (asyncContexts) {
+            asyncContexts.add(asyncContext);
+        }
     }
 
-
+    public void notifyClients() {
+        synchronized (asyncContexts) {
+            for (AsyncContext asyncContext : asyncContexts) {
+                try {
+                    asyncContext.complete();
+                } catch (IllegalStateException e) {}
+            }
+            asyncContexts.clear();
+        }
+    }
 }
 

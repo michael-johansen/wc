@@ -1,8 +1,15 @@
 package no.wc;
-/**
- * User: Michael Johansen
- * Date: 08.05.13
- * Time: 22:07
- */
-public class HelloWorldAnnotationServlet {
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet(name = "helloWorldServlet", urlPatterns = "/*")
+ public class HelloWorldAnnotationServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.getWriter().append("Hello World");
+    }
 }

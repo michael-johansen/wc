@@ -10,34 +10,35 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 
-@WebServlet(name = "SubscribeServlet", urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
+@WebServlet(name = "SynchronousSubscribeServlet", urlPatterns = "/sync", loadOnStartup = 1)
 public class SynchronousSubscribeServlet extends HttpServlet {
 
-    private static LinkedList<AsyncContext> asyncContexts = new LinkedList<>();
+    private static LinkedList<Thread> threads = new LinkedList<>();
 
     @Override
     public void init() throws ServletException {
-        getServletContext().setAttribute("SubscribeServlet", this);
+        getServletContext().setAttribute("SynchronousSubscribeServlet", this);
     }
 
     @Override
-    protected synchronized void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        synchronized (asyncContexts) {
-            AsyncContext asyncContext = httpServletRequest.startAsync();
-            asyncContexts.add(asyncContext);
+    protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
+        synchronized (threads) {
+            Thread thread = Thread.currentThread();
+            threads.add(thread);
         }
+        try {
+            Thread.sleep(60000);
+        } catch (InterruptedException e) {}
     }
 
     public void notifyClients() {
-        synchronized (asyncContexts) {
-            for (AsyncContext asyncContext : asyncContexts) {
+        synchronized (threads) {
+            for (Thread thread : threads) {
                 try {
-                    if (asyncContext != null) {
-                        asyncContext.complete();
-                    }
-                } catch (IllegalStateException e) {}
+                    thread.interrupt();
+                } catch (Exception e) {}
             }
-            asyncContexts.clear();
+            threads.clear();
         }
     }
 }
