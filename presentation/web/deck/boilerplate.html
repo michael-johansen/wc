@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=1024, user-scalable=no">
+
+    <title>Your deck.js Presentation</title>
+
+    <!-- Required stylesheet -->
+    <link rel="stylesheet" href="core/deck.core.css">
+
+    <!-- Extension CSS files go here. Remove or add as needed. -->
+    <link rel="stylesheet" href="extensions/goto/deck.goto.css">
+    <link rel="stylesheet" href="extensions/menu/deck.menu.css">
+    <link rel="stylesheet" href="extensions/navigation/deck.navigation.css">
+    <link rel="stylesheet" href="extensions/status/deck.status.css">
+    <link rel="stylesheet" href="extensions/hash/deck.hash.css">
+    <link rel="stylesheet" href="extensions/scale/deck.scale.css">
+
+    <!-- Style theme. More available in /themes/style/ or create your own. -->
+    <link rel="stylesheet" href="themes/style/web-2.0.css">
+
+    <!-- Transition theme. More available in /themes/transition/ or create your own. -->
+    <link rel="stylesheet" href="themes/transition/horizontal-slide.css">
+
+    <!-- Required Modernizr file -->
+    <script src="modernizr.custom.js"></script>
+</head>
+<body class="deck-container">
+
+<!-- Begin slides. Just make elements with a class of slide. -->
+
+<section class="slide">
+    <h1>Web Components in Java EE 6</h1>
+</section>
+
+<section class="slide">
+    <h2>first&hellip;</h2>
+    <ul>
+        <li>
+            <h3>Download Jetty</h3>
+
+            <p><a href="http://download.eclipse.org/jetty/stable-9/dist/">Get it here</a></p>
+        </li>
+        <li>
+            <h3>Setup annotations processing in Jetty</h3>
+            In <strong>%jetty_home%\start.ini</strong> enable:
+<pre class="prettyprint">
+#======================================
+# Annotations JNDI JAAS processing
+#--------------------------------------
+OPTIONS=plus
+etc/jetty-plus.xml
+OPTIONS=annotations
+etc/jetty-annotations.xml
+#======================================
+</pre>
+        </li>
+        <li>
+            <h3>[Optional] Setup your favourite IDE</h3>
+        </li>
+
+    </ul>
+</section>
+
+<section class="slide">
+    <h2>
+        then get the source&hellip;
+    </h2>
+    <a href="https://github.com/michael-johansen/wc">GitHub repository</a>
+    <ol>
+        <li>
+            <pre>git clone git://github.com/michael-johansen/wc.git</pre>
+        </li>
+        <li>
+            <pre>mvn package</pre>
+        </li>
+        <li>
+            <pre>&hellip;</pre>
+        </li>
+        <li>
+            <h3>profit</h3>
+        </li>
+    </ol>
+</section>
+
+<section class="slide">
+    <h2>Let's rock!</h2>
+    <img src="images/duke-guitar.png">
+</section>
+
+<section class="slide">
+    <h2>hello-world project</h2>
+
+    <p>Pre servlet-3.0 approach (but still valid)</p>
+<pre class="prettyprint">
+public class HelloWorldServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.getWriter().append("Hello World");
+    }
+}
+</pre>
+<pre class="prettyprint">
+&lt;web-app xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns=&quot;http://java.sun.com/xml/ns/javaee&quot; xsi:schemaLocation=&quot;http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd&quot; version=&quot;3.0&quot;&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;helloWorldServlet&lt;/servlet-name&gt;
+        &lt;servlet-class&gt;no.wc.HelloWorldServlet&lt;/servlet-class&gt;
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;helloWorldServlet&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;
+</pre>
+</section>
+
+<section class="slide">
+    <h2>hello-world-annotation project</h2>
+
+    <p>servlet 3.0 approach, <strong>web.xml</strong> and <strong>web-fragment.xml</strong> can override annotations.
+    </p>
+<pre class="prettyprint">
+@WebServlet(name = "helloWorldServlet", urlPatterns = "/*")
+public class HelloWorldAnnotationServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.getWriter().append("Hello World");
+    }
+}
+</pre>
+    <p>this is all that is required to make a deployable application.</p>
+</section>
+
+<section class="slide">
+    <h2>let's chat</h2>
+    <img src="images/chat_image.png">
+</section>
+
+
+<section class="slide">
+    <h2>Chatter</h2>
+   <p>A simple <i>async</i> chat-application</p>
+<pre class="prettyprint">
+@WebServlet(name = "SubscribeServlet", urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
+public class SubscribeServlet extends HttpServlet {
+</pre>
+<pre class="prettyprint">
+AsyncContext asyncContext = httpServletRequest.startAsync();
+synchronized (asyncContexts) {
+    asyncContexts.add(asyncContext);
+}
+</pre>
+<pre class="prettyprint">
+synchronized (asyncContexts) {
+    for (AsyncContext asyncContext : asyncContexts) {
+        try {
+            asyncContext.complete();
+        } catch (IllegalStateException e) {}
+    }
+    asyncContexts.clear();
+}
+</pre>
+
+
+</section>
+
+<section class="slide">
+    <h2>Recommended resources</h2>
+    <ul>
+        <li>
+            <a href="http://docs.oracle.com/javaee/6/tutorial/doc/">The Java EE 6 Tutorial</a>
+        </li>
+    </ul>
+</section>
+
+<section class="slide">
+</section>
+
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+    <span class="deck-status-current"></span>
+    /
+    <span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="" method="get" class="goto-form">
+    <label for="goto-slide">Go to slide:</label>
+    <input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+    <datalist id="goto-datalist"></datalist>
+    <input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="" title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="jquery-1.7.2.min.js"></script>
+<script src="core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="core/deck.core.js"></script>
+<script src="extensions/hash/deck.hash.js"></script>
+<script src="extensions/menu/deck.menu.js"></script>
+<script src="extensions/goto/deck.goto.js"></script>
+<script src="extensions/status/deck.status.js"></script>
+<script src="extensions/navigation/deck.navigation.js"></script>
+<script src="extensions/scale/deck.scale.js"></script>
+
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+    $(function () {
+        $.deck('.slide');
+    });
+</script>
+</body>
+</html>
