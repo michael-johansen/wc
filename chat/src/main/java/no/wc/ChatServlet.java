@@ -18,10 +18,6 @@ public class ChatServlet extends HttpServlet {
     public static final String TEXT = "text";
     public static final String SYSTEM_USER = "Chatter";
 
-    public ChatServlet() {
-        System.out.println("new chat servlet!");
-    }
-
     @Override
     protected void doGet(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         addUserIfNew(httpServletRequest);
