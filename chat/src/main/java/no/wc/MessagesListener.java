@@ -45,10 +45,10 @@ public class MessagesListener implements ServletContextAttributeListener {
         if (servletContextAttributeEvent.getName().equals("messages")) {
             ServletContext servletContext = servletContextAttributeEvent.getServletContext();
 
-            SubscribeServlet async = (SubscribeServlet) servletContext.getAttribute("SubscribeServlet");
+            AsyncNotificationServlet async = (AsyncNotificationServlet) servletContext.getAttribute("AsyncNotificationServlet");
             async.notifyClients();
 
-            SynchronousSubscribeServlet sync = (SynchronousSubscribeServlet) servletContext.getAttribute("SynchronousSubscribeServlet");
+            NotificationServlet sync = (NotificationServlet) servletContext.getAttribute("NotificationServlet");
             sync.notifyClients();
         }
     }

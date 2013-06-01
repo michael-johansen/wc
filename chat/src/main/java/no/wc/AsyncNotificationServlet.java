@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 
-@WebServlet(name = "SubscribeServlet", urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
-public class SubscribeServlet extends HttpServlet {
+@WebServlet(name = "AsyncNotificationServlet", urlPatterns = "/notify", asyncSupported = true, loadOnStartup = 1)
+public class AsyncNotificationServlet extends HttpServlet {
 
     private LinkedList<AsyncContext> asyncContexts = new LinkedList<>();
 
     @Override
     public void init() throws ServletException {
-        getServletContext().setAttribute("SubscribeServlet", this);
+        getServletContext().setAttribute("AsyncNotificationServlet", this);
     }
 
     @Override
@@ -25,6 +25,7 @@ public class SubscribeServlet extends HttpServlet {
         AsyncContext asyncContext = httpServletRequest.startAsync();
         synchronized (asyncContexts) {
             asyncContexts.add(asyncContext);
+            asyncContext.addListener(new TimeoutListener());
         }
     }
 
@@ -38,5 +39,6 @@ public class SubscribeServlet extends HttpServlet {
             asyncContexts.clear();
         }
     }
+
 }
 

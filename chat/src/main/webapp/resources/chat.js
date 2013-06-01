@@ -1,29 +1,25 @@
 (function ($) {
     var ERROR_RETRY_TIME_MS = 1000;
-    var ERROR_RETRY_TIMES = 3;
-    var retryTimes = 0;
 
-    function reloadMessages() {
-        $("#message").prop("disabled", false);
-        $("table").load(window.location.href + " table", subscribe);
-        retryTimes = 0;
+    function handleSuccess(data) {
+        if("timeout" === data){
+            subscribe();
+        } else {
+            $("#message").prop("disabled", false);
+            $("table").load(window.location.href + " table", subscribe);
+        }
     }
 
     function handleError() {
-        if (retryTimes >= ERROR_RETRY_TIMES) {
-            $("#message").prop("disabled", true);
-            setTimeout(subscribe, ERROR_RETRY_TIME_MS);
-        } else {
-            subscribe();
-        }
-        retryTimes++;
+        $("#message").prop("disabled", true);
+        setTimeout(subscribe, ERROR_RETRY_TIME_MS);
     }
 
     function subscribe() {
         $.ajax({
             type: "GET",
             url: "/chat/notify",
-            success: reloadMessages,
+            success: handleSuccess,
             error: handleError
         });
     }

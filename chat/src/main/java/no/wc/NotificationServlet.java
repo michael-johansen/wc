@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 
-@WebServlet(name = "SynchronousSubscribeServlet", urlPatterns = "/sync", loadOnStartup = 1)
-public class SynchronousSubscribeServlet extends HttpServlet {
+@WebServlet(name = "NotificationServlet", urlPatterns = "/sync", loadOnStartup = 1)
+public class NotificationServlet extends HttpServlet {
 
     private static LinkedList<Thread> threads = new LinkedList<>();
 
     @Override
     public void init() throws ServletException {
-        getServletContext().setAttribute("SynchronousSubscribeServlet", this);
+        getServletContext().setAttribute("NotificationServlet", this);
     }
 
     @Override
